@@ -1,0 +1,1 @@
+deb [signed-by=/etc/apt/keyrings/repository.spotify.com.asc] http://repository.spotify.com stable non-free

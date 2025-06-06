@@ -1,0 +1,63 @@
+- name: Create /etc/apt/sources.list.d directory
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d
+    state: directory
+- name: Write apt sources.list.d
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/apt/sources.list.d
+    owner: root
+    mode: 0755
+  loop: "{{ query('fileglob', 'etc/apt/sources.list.d/*') }}"
+- name: Create /etc/apt/keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+- name: Write apt keyring
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/apt/keyrings
+    owner: root
+    mode: 0755
+  loop: "{{ query('fileglob', 'etc/apt/keyrings/*') }}"
+- name: Create /etc/apt/preferences.d directory
+  ansible.builtin.file:
+    path: /etc/apt/preferences.d
+    state: directory
+- name: Write apt preferences.d
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/apt/preferences.d
+    owner: root
+    mode: 0755
+  loop: "{{ query('fileglob', 'etc/apt/preferences.d/*') }}"
+- name: Enable multi-arch
+  ansible.builtin.command: dpkg --add-architecture i386
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+- name: Install additional graphics libraries
+  ansible.builtin.apt:
+    package:
+      - mesa-vulkan-drivers
+      - mesa-vulkan-drivers:i386
+      - libglx-mesa0:i386
+      - libgl1-mesa-dri:i386
+- name: Uninstall unnecessary apps
+  ansible.builtin.apt:
+    package:
+      - firefox-esr
+      - gnome-games
+    purge: true
+    state: absent
+- name: Autoremove left-over dependencies
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+- name: Install apps
+  ansible.builtin.apt:
+    package:
+      - code
+      - firefox
+      - spotify-client
+      - steam-installer
