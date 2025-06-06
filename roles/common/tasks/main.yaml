@@ -1,0 +1,23 @@
+- name: Deploy base apt configuration
+  ansible.builtin.copy:
+    src: etc/apt/sources.list
+    dest: /etc/apt
+    owner: root
+    group: root
+    mode: 0755
+- name: Update & upgrade
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+- name: Install updated kernel from stable-backports (x86_64)
+  ansible.builtin.apt:
+    package: linux-image-amd64
+    state: latest
+    default_release: stable-backports
+  when: ansible_facts['architecture'] == 'x86_64'
+- name: Install updated kernel from stable-backports (arm64)
+  ansible.builtin.apt:
+    package: linux-image-arm64
+    state: latest
+    default_release: stable-backports
+  when: ansible_facts['architecture'] == 'aarch64'
