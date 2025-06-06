@@ -1,0 +1,134 @@
+- name: Enable IPv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_file: /etc/sysctl.d/10-ip.conf
+- name: Install dnsmasq
+  ansible.builtin.apt:
+    package: dnsmasq
+- name: Write dnsmasq configuration
+  block:
+    - name: Create /etc/dnsmasq.d directory
+      ansible.builtin.file:
+        path: /etc/dnsmasq.d
+        state: directory
+        mode: "0755"
+    - name: Write main dnsmasq configuration
+      ansible.builtin.copy:
+        src: etc/dnsmasq.conf
+        dest: /etc/dnsmasq.conf
+        owner: root
+        mode: "0644"
+    - name: Write dnsmasq configuration
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /etc/dnsmasq.d
+        owner: root
+        mode: "0644"
+      loop: "{{ query('fileglob', 'etc/dnsmasq.d/*') }}"
+- name: Enable dnsmasq
+  ansible.builtin.service:
+    name: dnsmasq
+    state: restarted
+    enabled: true
+- name: Install nftables
+  ansible.builtin.apt:
+    package: nftables
+- name: Write nftables configuration
+  block:
+    - name: Create /etc/nftables.d directory
+      ansible.builtin.file:
+        path: /etc/nftables.d
+        state: directory
+        mode: "0755"
+    - name: Write main nftables configuration
+      ansible.builtin.copy:
+        src: etc/nftables.conf
+        dest: /etc
+        owner: root
+        mode: "0644"
+    - name: Write nftables configuration
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /etc/nftables.d
+        owner: root
+        mode: "0644"
+      loop: "{{ query('fileglob', 'etc/nftables.d/*') }}"
+- name: Enable nftables
+  ansible.builtin.service:
+    name: nftables
+    state: restarted
+    enabled: true
+- name: Install bridge-utils
+  ansible.builtin.apt:
+    package: bridge-utils
+- name: Write network interfaces configuration
+  block:
+    - name: Create /etc/network/interfaces.d directory
+      ansible.builtin.file:
+        path: /etc/network/interfaces.d
+        state: directory
+        mode: "0755"
+    - name: Write network interfaces configuration
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /etc/network/interfaces.d
+        owner: root
+        mode: "0644"
+      loop: "{{ query('fileglob', 'etc/network/interfaces.d/*') }}"
+- name: Reload network interfaces
+  ansible.builtin.command:
+    cmd: ifup -a
+- name: Install lxc
+  ansible.builtin.apt:
+    package: lxc
+- name: Disable lxc-net
+  ansible.builtin.systemd_service:
+    name: lxc-net
+    state: stopped
+    enabled: false
+    masked: true
+- name: Write lxc configuration
+  block:
+    - name: Write lxc system configuration
+      ansible.builtin.copy:
+        src: etc/lxc/lxc.conf
+        dest: /etc/lxc
+        owner: root
+        mode: "0644"
+    - name: Write lxc container default configuration
+      ansible.builtin.copy:
+        src: etc/lxc/default.conf
+        dest: /etc/lxc
+        owner: root
+        mode: "0644"
+- name: Install libvirt
+  ansible.builtin.apt:
+    package:
+      - libvirt-clients
+      - libvirt-daemon-system
+      - qemu-system
+      - virtinst
+    install_recommends: false
+- name: Install Cockpit
+  ansible.builtin.apt:
+    package: cockpit
+    install_recommends: false
+- name: Install Cockpit add-ons
+  ansible.builtin.apt:
+    package:
+      - cockpit-machines
+      - cockpit-pcp
+      - cockpit-networkmanager
+      - cockpit-storaged
+- name: Write Cockpit disallowed-users configuration
+  ansible.builtin.copy:
+    src: etc/cockpit/disallowed-users
+    dest: /etc/cockpit
+    owner: root
+    mode: "0644"
+- name: Enable Cockpit
+  ansible.builtin.service:
+    name: cockpit.socket
+    state: restarted
+    enabled: true
