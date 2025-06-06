@@ -1,0 +1,7 @@
+- name: Bootstrap workstation system
+  hosts: workstation
+  become: true
+
+  roles:
+    - common
+    - workstation
