@@ -1,0 +1,7 @@
+- name: Bootstrap hypervisor system
+  hosts: hypervisor
+  become: true
+
+  roles:
+    - common
+    - hypervisor
