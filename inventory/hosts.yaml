@@ -1,5 +1,8 @@
 hypervisor:
   hosts:
 
+nas:
+  hosts:
+
 workstation:
   hosts:

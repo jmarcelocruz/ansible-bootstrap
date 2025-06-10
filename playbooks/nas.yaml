@@ -1,0 +1,7 @@
+- name: Bootstrap NAS system
+  hosts: nas
+  become: true
+
+  roles:
+    - common
+    - nas
