@@ -1,0 +1,53 @@
+- name: Install nfs server
+  ansible.builtin.apt:
+    package:
+      - nfs-kernel-server
+- name: Configure NFSv4 only (disable v3)
+  ansible.builtin.lineinfile:
+    line: vers3=n
+    path: /etc/nfs.conf
+    regexp: ^vers3=.*$
+    insertafter: ^\[nfsd\]$
+- name: Configure NFSv4 only (statd)
+  ansible.builtin.lineinfile:
+    line: NEED_STATD="no"
+    path: /etc/default/nfs-common
+    regexp: ^NEED_STATD=.*$
+- name: Configure NFSv4 only (idmapd)
+  ansible.builtin.lineinfile:
+    line: NEED_IDMAPD="yes"
+    path: /etc/default/nfs-common
+    regexp: ^NEED_IDMAPD=.*$
+- name: Configure NFSv4 only (rpcnfsdopts)
+  ansible.builtin.lineinfile:
+    line: RPCNFSDOPTS="-N 2 -N 3"
+    path: /etc/default/nfs-kernel-server
+    regexp: ^RPCNFSDOPTS=.*$
+- name: Configure NFSv4 only (rpcmountdopts)
+  ansible.builtin.lineinfile:
+    line: RPCMOUNTDOPTS="--manage-gids -N 2 -N 3"
+    path: /etc/default/nfs-kernel-server
+    regexp: ^RPCMOUNTDOPTS=.*$
+- name: Disable and mask rpcbind
+  ansible.builtin.systemd:
+    unit: rpcbind
+    enabled: false
+    masked: true
+    state: stopped
+- name: Disable and mask rpcbind (socket)
+  ansible.builtin.systemd:
+    unit: rpcbind.socket
+    enabled: false
+    masked: true
+    state: stopped
+- name: Disable and mask rpc-statd
+  ansible.builtin.systemd:
+    unit: rpc-statd
+    enabled: false
+    masked: true
+    state: stopped
+- name: Enable nfs-server
+  ansible.builtin.systemd:
+    unit: nfs-server
+    enabled: true
+    state: restarted
