@@ -1,3 +1,11 @@
+- name: Install hdparm
+  ansible.builtin.apt:
+    package:
+      - hdparm
+- name: Install mdadm
+  ansible.builtin.apt:
+    package:
+      - mdadm
 - name: Install nfs server
   ansible.builtin.apt:
     package:
