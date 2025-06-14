@@ -1,0 +1,29 @@
+table inet hardening {
+    chain input {
+        type filter hook input priority filter; policy drop;
+
+        iif "lo" accept
+        ct state established,related accept
+        tcp dport 22 ct state new accept
+{% for rule in nftables_input_rules %}
+        {{ rule }}
+{% endfor %}
+    }
+
+    chain forward {
+        type filter hook forward priority filter; policy drop;
+
+        ct state established,related accept
+{% for rule in nftables_forward_rules %}
+        {{ rule }}
+{% endfor %}
+    }
+
+    chain output {
+        type filter hook output priority filter; policy accept;
+
+{% for rule in nftables_output_rules %}
+        {{ rule }}
+{% endfor %}
+    }
+}

@@ -1,0 +1,3 @@
+nftables_input_rules: []
+nftables_forward_rules: []
+nftables_output_rules: []
