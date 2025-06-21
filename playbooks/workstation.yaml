@@ -4,4 +4,9 @@
 
   roles:
     - common
+    - firewall
     - workstation
+
+  vars:
+    nftables_input_rules:
+      - tcp dport 22 accept
