@@ -1,10 +1,17 @@
 table inet nat {
     chain prerouting {
         type nat hook prerouting priority dstnat;
+
+{% for rule in nftables_dstnat_rules %}
+        {{ rule }}
+{% endfor %}
     }
 
     chain postrouting {
         type nat hook postrouting priority srcnat;
-        ip saddr 172.16.100.0/24 masquerade;
+
+{% for rule in nftables_srcnat_rules %}
+        {{ rule }}
+{% endfor %}
     }
 }

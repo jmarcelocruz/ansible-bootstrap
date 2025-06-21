@@ -4,23 +4,30 @@ table inet filter {
 
         iif lo accept;
         ct state established,related accept;
-        ip saddr 172.16.100.0/24 accept;
-        icmp type echo-request accept
-        tcp dport 22 accept;
-        udp dport 67 accept;
+
+{% for rule in nftables_input_rules %}
+        {{ rule }}
+{% endfor %}
 
         log prefix "nftables input drop: " level info;
     }
 
     chain output {
         type filter hook output priority filter; policy accept;
+
+{% for rule in nftables_output_rules %}
+        {{ rule }}
+{% endfor %}
     }
 
     chain forward {
         type filter hook forward priority filter; policy drop;
 
         ct state established,related accept;
-        ip saddr 172.16.100.0/24 accept;
+
+{% for rule in nftables_forward_rules %}
+        {{ rule }}
+{% endfor %}
 
         log prefix "nftables forward drop: " level info;
 

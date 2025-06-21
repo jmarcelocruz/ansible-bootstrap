@@ -31,34 +31,6 @@
     name: dnsmasq
     state: restarted
     enabled: true
-- name: Install nftables
-  ansible.builtin.apt:
-    package: nftables
-- name: Write nftables configuration
-  block:
-    - name: Create /etc/nftables.d directory
-      ansible.builtin.file:
-        path: /etc/nftables.d
-        state: directory
-        mode: "0755"
-    - name: Write main nftables configuration
-      ansible.builtin.copy:
-        src: etc/nftables.conf
-        dest: /etc
-        owner: root
-        mode: "0644"
-    - name: Write nftables configuration
-      ansible.builtin.copy:
-        src: "{{ item }}"
-        dest: /etc/nftables.d
-        owner: root
-        mode: "0644"
-      loop: "{{ query('fileglob', 'etc/nftables.d/*') }}"
-- name: Enable nftables
-  ansible.builtin.service:
-    name: nftables
-    state: restarted
-    enabled: true
 - name: Install bridge-utils
   ansible.builtin.apt:
     package: bridge-utils
