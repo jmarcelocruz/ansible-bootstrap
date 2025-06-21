@@ -4,4 +4,10 @@
 
   roles:
     - common
+    - firewall
     - nas
+
+  vars:
+    nftables_input_rules:
+      - tcp dport 22 accept
+      - tcp dport 2049 accept
