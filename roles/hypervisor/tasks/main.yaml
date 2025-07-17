@@ -81,6 +81,7 @@
       - libvirt-daemon-system
       - qemu-system
       - virtinst
+      - ovmf
     install_recommends: false
 - name: Install Cockpit
   ansible.builtin.apt:
