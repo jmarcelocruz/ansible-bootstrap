@@ -41,6 +41,12 @@
         path: /etc/network/interfaces.d
         state: directory
         mode: "0755"
+    - name: Write main network interfaces configuration
+      ansible.builtin.copy:
+        src: etc/network/interfaces
+        dest: /etc/network/interfaces
+        owner: root
+        mode: "0644"
     - name: Write network interfaces configuration
       ansible.builtin.copy:
         src: "{{ item }}"
