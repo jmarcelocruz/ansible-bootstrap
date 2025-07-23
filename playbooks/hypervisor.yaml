@@ -13,6 +13,7 @@
       - tcp dport 22 accept
       - udp dport 67 accept
     nftables_forward_rules:
-      - ip saddr 172.16.100.0/24 accept
+      - ip saddr 172.16.250.0/24 accept
     nftables_srcnat_rules:
-      - ip saddr 172.16.100.0/24 masquerade
+      - ip saddr 172.16.250.0/24 masquerade
+
